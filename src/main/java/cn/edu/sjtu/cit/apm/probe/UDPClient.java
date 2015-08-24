@@ -3,23 +3,7 @@ package cn.edu.sjtu.cit.apm.probe;
 import java.io.*;
 import java.net.*;
 
-class UDPClient {
-    public static void main(String args[]) throws Exception {
-        System.out.println("udp client start!");
-        DatagramSocket clientSocket = new DatagramSocket();
-        InetAddress IPAddress = InetAddress.getByName("localhost");
-        byte[] sendData = new byte[1024];
-        byte[] receiveData = new byte[1024];
-        String sentence = "pia!";
-        sendData = sentence.getBytes();
-        DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, 9876);
-        clientSocket.send(sendPacket);
-        DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
-        clientSocket.receive(receivePacket);
-        String modifiedSentence = new String(receivePacket.getData());
-        System.out.println("FROM SERVER:" + modifiedSentence);
-        clientSocket.close();
-    }
+public class UDPClient {
 
     private DatagramSocket socket;
     private InetAddress ip;
@@ -43,8 +27,16 @@ class UDPClient {
         return new String(receivePacket.getData());
     }
 
-    public boolean registerProc() throws IOException {
-        System.out.println(send("APM_REGISTER"));
-        return false;
+    public boolean registerInstance(String instanceName) throws IOException {
+        String req = "APM_REGISTER:" + instanceName + ":" + Util.getPID();
+        String res = send(req);
+        // FIXME: the receive string has a long empty part ....
+        if (res.startsWith("registered")) {
+            System.out.println("registered");
+            return true;
+        } else {
+            System.err.println("fail to register, collector return: " + res);
+            return false;
+        }
     }
 }

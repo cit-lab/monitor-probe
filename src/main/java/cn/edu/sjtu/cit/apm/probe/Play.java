@@ -6,8 +6,8 @@ package cn.edu.sjtu.cit.apm.probe;
 public class Play {
     public static void main(String[] args) throws Exception {
         UDPClient client = new UDPClient("localhost", 9876);
-        client.send("aaaa");
-        client.send("APM_REGISTER");
-        client.registerProc();
+        client.registerInstance("dummy probe");
+
+//        System.out.println("pid is " + Util.getPID());
     }
 }
