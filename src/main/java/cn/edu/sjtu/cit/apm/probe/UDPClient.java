@@ -15,11 +15,14 @@ public class UDPClient {
         this.port = port;
     }
 
+    public UDPClient(String host, String port) throws SocketException, UnknownHostException {
+        this(host, Integer.parseInt(port));
+    }
+
     public String send(String data) throws IOException {
-        byte[] sendData = new byte[1024];
         byte[] receiveData = new byte[1024];
-        System.out.println("want to send: " + data);
-        sendData = data.getBytes();
+//        System.out.println("want to send: " + data);
+        byte[] sendData = data.getBytes();
         DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, ip, port);
         socket.send(sendPacket);
         DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
@@ -32,10 +35,11 @@ public class UDPClient {
         String res = send(req);
         // FIXME: the receive string has a long empty part ....
         if (res.startsWith("registered")) {
-            System.out.println("registered");
+//            System.out.println("registered");
             return true;
         } else {
-            System.err.println("fail to register, collector return: " + res);
+            // TODO: store the error message and return in another method
+//            System.err.println("fail to register, collector return: " + res);
             return false;
         }
     }
