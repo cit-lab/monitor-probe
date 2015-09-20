@@ -5,7 +5,7 @@ package cn.edu.sjtu.cit.apm.probe;
  */
 public class Play {
     public static void main(String[] args) throws Exception {
-        UDPClient client = new UDPClient("localhost", 9876);
+        UDPClient client = new UDPClient("localhost", 9876, 1000);
         client.registerInstance("dummy probe");
 
 //        System.out.println("pid is " + Util.getPID());
