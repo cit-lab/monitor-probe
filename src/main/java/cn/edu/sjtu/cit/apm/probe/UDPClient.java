@@ -1,12 +1,15 @@
 package cn.edu.sjtu.cit.apm.probe;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.*;
 import java.net.*;
 import java.util.Timer;
 import java.util.TimerTask;
 
 public class UDPClient {
-
+    private static final Logger LOGGER = LoggerFactory.getLogger(UDPClient.class);
     private DatagramSocket socket;
     private InetAddress ip;
     private Integer port;
@@ -29,7 +32,7 @@ public class UDPClient {
 
     public String send(String data) throws IOException {
         byte[] receiveData = new byte[1024];
-//        System.out.println("want to send: " + data);
+        LOGGER.debug("send: " + data);
         byte[] sendData = data.getBytes();
         DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, ip, port);
         socket.send(sendPacket);
@@ -44,18 +47,16 @@ public class UDPClient {
         try {
             res = send(req);
         } catch (SocketTimeoutException e) {
-            // TODO: use log4j
-            System.err.println("Timeout for " + timeout);
-            // TODO: Add a delay job in another thread
+            LOGGER.warn("register instance timeout after " + timeout + " ms");
             return false;
         }
         // FIXME: the receive string has a long empty part ....
         if (res.startsWith("registered")) {
-//            System.out.println("registered");
+            LOGGER.info("successfully registered");
             return true;
         } else {
             // TODO: store the error message and return in another method
-//            System.err.println("fail to register, collector return: " + res);
+            LOGGER.warn("fail to register, collector return: " + res);
             return false;
         }
     }
@@ -68,14 +69,14 @@ public class UDPClient {
             @Override
             public void run() {
                 try {
-                    System.out.println("Try to register instance every " + interval + "ms");
+                    LOGGER.info("register instance every " + interval + " ms");
                     if (registerInstance(instanceName)) {
                         task.cancel();
                         timer.cancel();
-                        System.out.println("Registered! cancel timer!");
+                        LOGGER.info("registered, cancel timer");
                     }
                 } catch (IOException e) {
-                    System.out.println("Got IOException " + e.getClass());
+                    LOGGER.error("Error during register instance in timer", e);
                 }
             }
         };
