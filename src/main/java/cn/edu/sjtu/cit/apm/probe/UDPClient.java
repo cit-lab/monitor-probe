@@ -63,11 +63,13 @@ public class UDPClient {
 
     // Keep registering instance until success
     // TODO: interval should be larger than socket timeout
+    // TODO: interval should change automatically when fail
     public void registerInstance(final String instanceName, final Integer interval) {
         timer = new Timer();
         task = new TimerTask() {
             @Override
             public void run() {
+                Thread.currentThread().setName("apm-probe-register");
                 try {
                     LOGGER.info("register instance every " + interval + " ms");
                     if (registerInstance(instanceName)) {
@@ -82,4 +84,6 @@ public class UDPClient {
         };
         timer.schedule(task, interval, interval);
     }
+
+    // TODO: add shutdown instance
 }
